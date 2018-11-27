@@ -1,0 +1,33 @@
+plugins {
+  id 'java'
+}
+
+group = 'reactor-raft'
+version = '1.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+  mavenLocal()
+  maven {
+    url = 'http://repo.maven.apache.org/maven2'
+  }
+}
+
+def reactorVersion = '3.2.3.RELEASE'
+def junitVersion = '5.3.2'
+
+dependencies {
+  compile group: 'io.projectreactor', name: 'reactor-core', version: reactorVersion
+
+  testCompile group: 'io.projectreactor', name: 'reactor-test', version: reactorVersion
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitVersion
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitVersion
+}
+
+test {
+  useJUnitPlatform()
+
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
+}
