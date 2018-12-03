@@ -1,5 +1,7 @@
 plugins {
   id 'java'
+  id 'jacoco'
+  id 'com.github.kt3k.coveralls' version '2.8.2'
 }
 
 group = 'reactor-raft'
@@ -29,5 +31,13 @@ test {
 
   testLogging {
     events "passed", "skipped", "failed"
+  }
+}
+
+jacocoTestReport {
+  reports {
+    html.enabled = true
+    xml.enabled = true
+    csv.enabled = false
   }
 }
