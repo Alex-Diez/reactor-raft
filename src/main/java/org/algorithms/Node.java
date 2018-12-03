@@ -3,45 +3,42 @@ package org.algorithms;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Clock;
-import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
+
+import static org.algorithms.Event.Type.START_ELECTION;
+import static org.algorithms.Event.Type.VOTING;
 
 class Node {
   private final UUID id;
-  private final long electionTimeout;
-  private final Clock clock;
   private final EventDispatcher eventDispatcher;
   private final Poller poller;
-  private Instant changeStateEvent;
   private int term;
   private Flux<State> state;
 
   Node(
       UUID id,
-      long electionTimeout,
-      Clock clock,
       EventDispatcher eventDispatcher,
-      Poller poller) {
+      Poller poller,
+      List<UUID> cluster) {
     this.id = id;
-    this.electionTimeout = electionTimeout;
-    this.clock = clock;
     this.eventDispatcher = eventDispatcher;
     this.poller = poller;
-    this.changeStateEvent = clock.instant();
     state = poller.poll()
               .map(
                   event -> {
-                    if (event.type == EventType.VOTING) {
+                    if (event.type == VOTING) {
                       return State.LEADER;
                     }
-                    if (event.type == EventType.START_ELECTION) {
-                      eventDispatcher.fire(new Event(id, event.sourceId, EventType.VOTING));
+                    if (event.type == START_ELECTION) {
+                      eventDispatcher.fire(VOTING.event(id, event.sourceId));
                       return State.FOLLOWER;
                     }
-                    if (event.type == EventType.ELECTION_TIMEOUT) {
+                    if (event.type == Event.Type.ELECTION_TIMEOUT) {
                       term++;
-                      eventDispatcher.fire(new Event(id, event.sourceId, EventType.START_ELECTION));
+                      for (UUID target : cluster) {
+                        eventDispatcher.fire(START_ELECTION.event(id, target));
+                      }
                       return State.CANDIDATE;
                     } else {
                       return State.FOLLOWER;

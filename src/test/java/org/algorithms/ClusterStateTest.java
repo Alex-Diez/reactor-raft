@@ -4,11 +4,12 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 class ClusterStateTest {
   @Test
-  void createSimplestCluster() throws Exception {
+  void createSimplestCluster() {
     Clock globalClock = new MockClock(Instant.now());
     QueuedEventDispatcher dispatcher = new QueuedEventDispatcher();
 
@@ -20,8 +21,8 @@ class ClusterStateTest {
       pollers[i] = dispatcher.register(nodeIds[i]);
     }
 
-    Node one = new Node(UUID.randomUUID(), electionTimeouts[0], globalClock, dispatcher, pollers[0]);
-    Node two = new Node(UUID.randomUUID(), electionTimeouts[1], globalClock, dispatcher, pollers[1]);
-    Node three = new Node(UUID.randomUUID(), electionTimeouts[2], globalClock, dispatcher, pollers[2]);
+    Node one = new Node(UUID.randomUUID(), dispatcher, pollers[0], List.of(nodeIds[1], nodeIds[2]));
+    Node two = new Node(UUID.randomUUID(), dispatcher, pollers[1], List.of(nodeIds[0], nodeIds[2]));
+    Node three = new Node(UUID.randomUUID(), dispatcher, pollers[2], List.of(nodeIds[0], nodeIds[1]));
   }
 }
