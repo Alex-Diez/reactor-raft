@@ -6,7 +6,7 @@ plugins {
 
 group = 'reactor-raft'
 version = '1.0-SNAPSHOT'
-sourceCompatibility = 8
+sourceCompatibility = 9
 
 repositories {
   mavenLocal()

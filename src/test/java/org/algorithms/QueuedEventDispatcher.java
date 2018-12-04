@@ -8,23 +8,25 @@ import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiConsumer;
 
+import static org.algorithms.Event.Type.*;
+
 class QueuedEventDispatcher implements EventDispatcher {
   private Map<UUID, Queue<Event>> sentNetworkEvents = new HashMap<>();
   private Map<UUID, Queue<Event>> receivedNetworkEvents = new HashMap<>();
   private Map<UUID, Queue<Event>> sentTimeEvents = new HashMap<>();
   private Map<UUID, Queue<Event>> receivedTimeEvents = new HashMap<>();
 
-  private Map<EventType, BiConsumer<Map<UUID, Queue<Event>>, Event>> publishers = new EnumMap<>(EventType.class);
-  private Map<EventType, Map<UUID, Queue<Event>>> receivers = new EnumMap<>(EventType.class);
+  private Map<Event.Type, BiConsumer<Map<UUID, Queue<Event>>, Event>> publishers = new EnumMap<>(Event.Type.class);
+  private Map<Event.Type, Map<UUID, Queue<Event>>> receivers = new EnumMap<>(Event.Type.class);
 
   QueuedEventDispatcher() {
-    publishers.put(EventType.ELECTION_TIMEOUT, timeEventConsumer());
-    publishers.put(EventType.START_ELECTION, networkEventConsumer());
-    publishers.put(EventType.VOTING, networkEventConsumer());
+    publishers.put(ELECTION_TIMEOUT, timeEventConsumer());
+    publishers.put(START_ELECTION, networkEventConsumer());
+    publishers.put(VOTING, networkEventConsumer());
 
-    receivers.put(EventType.ELECTION_TIMEOUT, receivedTimeEvents);
-    receivers.put(EventType.START_ELECTION, receivedNetworkEvents);
-    receivers.put(EventType.VOTING, receivedTimeEvents);
+    receivers.put(ELECTION_TIMEOUT, receivedTimeEvents);
+    receivers.put(START_ELECTION, receivedNetworkEvents);
+    receivers.put(VOTING, receivedTimeEvents);
   }
 
   private BiConsumer<Map<UUID, Queue<Event>>, Event> timeEventConsumer() {
