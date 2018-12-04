@@ -6,7 +6,7 @@ plugins {
 
 group = 'reactor-raft'
 version = '1.0-SNAPSHOT'
-sourceCompatibility = 9
+sourceCompatibility = 11
 
 repositories {
   mavenLocal()
@@ -32,6 +32,10 @@ test {
   testLogging {
     events "passed", "skipped", "failed"
   }
+}
+
+jacoco {
+  toolVersion = "0.8.2"
 }
 
 jacocoTestReport {
