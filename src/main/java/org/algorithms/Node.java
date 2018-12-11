@@ -31,13 +31,13 @@ class Node {
                       return State.LEADER;
                     }
                     if (event.type == START_ELECTION) {
-                      eventDispatcher.fire(VOTING.event(id, event.sourceId));
+                      eventDispatcher.fire(VOTING.event(Source.withId(id), event.source.toDestination()));
                       return State.FOLLOWER;
                     }
                     if (event.type == Event.Type.ELECTION_TIMEOUT) {
                       term++;
                       for (UUID target : cluster) {
-                        eventDispatcher.fire(START_ELECTION.event(id, target));
+                        eventDispatcher.fire(START_ELECTION.event(Source.withId(id), Destination.withId(target)));
                       }
                       return State.CANDIDATE;
                     } else {

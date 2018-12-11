@@ -1,21 +1,17 @@
 package org.algorithms;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import reactor.test.StepVerifier;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
-import reactor.core.scheduler.Schedulers;
-import reactor.test.StepVerifier;
+import static org.algorithms.State.*;
 
-import static org.algorithms.Event.Type.ELECTION_TIMEOUT;
-import static org.algorithms.State.CANDIDATE;
-import static org.algorithms.State.FOLLOWER;
-import static org.algorithms.State.LEADER;
-
-class NodeStateTest {
+class OldSingleNodeStateTest {
   private static final UUID NODE_TIMER_ID = UUID.randomUUID();
 
   private Node node;
@@ -52,6 +48,7 @@ class NodeStateTest {
   }
 
   @Test
+  @Disabled
   void nodeBecomeLeader_whenElectionTimeoutIsPassed() {
     nodeElectionTimeout();
 
@@ -60,6 +57,7 @@ class NodeStateTest {
   }
 
   @Test
+  @Disabled
   void otherNode_votesForCurrentNode_ifItIsFollower() {
     nodeElectionTimeout();
     nodeStartElection();

@@ -13,15 +13,19 @@ class Timer {
   private final UUID timerId;
   private final UUID nodeId;
   private final Duration duration;
+  private final Source source;
+  private final Destination destination;
 
   Timer(long duration, ChronoUnit unit, UUID timerId, UUID nodeId) {
     this.duration = Duration.of(duration, unit);
     this.timerId = timerId;
+    this.source = Source.withId(timerId);
     this.nodeId = nodeId;
+    this.destination = Destination.withId(nodeId);
   }
 
   Flux<Event> electionTimeoutEvent() {
-    return Mono.<Event>create(e -> e.success(ELECTION_TIMEOUT.event(timerId, nodeId)))
+    return Mono.<Event>create(e -> e.success(ELECTION_TIMEOUT.event(source, destination)))
         .delayElement(duration)
         .repeat();
   }

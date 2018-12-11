@@ -1,22 +1,21 @@
 package org.algorithms;
 
 import java.util.Objects;
-import java.util.UUID;
 
 final class Event {
-  final UUID sourceId;
-  final UUID targetId;
+  final Source source;
+  final Destination destination;
   final Type type;
 
-  private Event(UUID sourceId, UUID targetId, Type type) {
-    this.sourceId = sourceId;
-    this.targetId = targetId;
+  private Event(Source source, Destination destination, Type type) {
+    this.source = source;
+    this.destination = destination;
     this.type = type;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(sourceId, targetId, type);
+    return Objects.hash(source, destination, type);
   }
 
   @Override
@@ -25,17 +24,27 @@ final class Event {
     if (object != null && object.getClass().equals(getClass())) {
       Event event = (Event)object;
       return event.type == type
-          && event.sourceId.equals(sourceId)
-          && event.targetId.equals(targetId);
+          && Objects.equals(event.source, source)
+          && Objects.equals(event.destination, destination);
     }
     return false;
   }
 
-  enum Type {
-    START_ELECTION, ELECTION_TIMEOUT, VOTING;
+  @Override
+  public String toString() {
+    return "Event{" +
+        "source=" + source +
+        ", destination=" + destination +
+        ", type=" + type +
+        '}';
+  }
 
-    Event event(UUID source, UUID target) {
-      return new Event(source, target, this);
+  public enum Type {
+    START_ELECTION, ELECTION_TIMEOUT, VOTING,
+    FOLLOWER_STATE, CANDIDATE_STATE;
+
+    public Event event(Source source, Destination destination) {
+      return new Event(source, destination, this);
     }
   }
 }

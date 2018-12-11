@@ -24,6 +24,8 @@ dependencies {
   testCompile group: 'io.projectreactor', name: 'reactor-test', version: reactorVersion
   testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitVersion
   testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitVersion
+
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
 }
 
 test {

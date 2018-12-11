@@ -20,11 +20,11 @@ class TimerTest {
     timer.electionTimeoutEvent()
         .as(StepVerifier::create)
         .thenAwait(Duration.of(1L, ChronoUnit.MILLIS))
-        .expectNext(ELECTION_TIMEOUT.event(timerId, nodeId))
+        .expectNext(ELECTION_TIMEOUT.event(Source.withId(timerId), Destination.withId(nodeId)))
         .thenAwait(Duration.of(1L, ChronoUnit.MILLIS))
-        .expectNext(ELECTION_TIMEOUT.event(timerId, nodeId))
+        .expectNext(ELECTION_TIMEOUT.event(Source.withId(timerId), Destination.withId(nodeId)))
         .thenAwait(Duration.of(1L, ChronoUnit.MILLIS))
-        .expectNext(ELECTION_TIMEOUT.event(timerId, nodeId))
+        .expectNext(ELECTION_TIMEOUT.event(Source.withId(timerId), Destination.withId(nodeId)))
         .thenCancel()
         .verify();
   }

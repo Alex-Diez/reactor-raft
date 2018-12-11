@@ -11,9 +11,7 @@ import java.util.function.BiConsumer;
 import static org.algorithms.Event.Type.*;
 
 class QueuedEventDispatcher implements EventDispatcher {
-  private Map<UUID, Queue<Event>> sentNetworkEvents = new HashMap<>();
   private Map<UUID, Queue<Event>> receivedNetworkEvents = new HashMap<>();
-  private Map<UUID, Queue<Event>> sentTimeEvents = new HashMap<>();
   private Map<UUID, Queue<Event>> receivedTimeEvents = new HashMap<>();
 
   private Map<Event.Type, BiConsumer<Map<UUID, Queue<Event>>, Event>> publishers = new EnumMap<>(Event.Type.class);
@@ -25,14 +23,15 @@ class QueuedEventDispatcher implements EventDispatcher {
     publishers.put(VOTING, networkEventConsumer());
 
     receivers.put(ELECTION_TIMEOUT, receivedTimeEvents);
-    receivers.put(START_ELECTION, receivedNetworkEvents);
     receivers.put(VOTING, receivedTimeEvents);
+
+    receivers.put(START_ELECTION, receivedNetworkEvents);
   }
 
   private BiConsumer<Map<UUID, Queue<Event>>, Event> timeEventConsumer() {
     return (receiver, event) -> receiver.entrySet()
         .stream()
-        .filter(e -> e.getKey().equals(event.targetId))
+        .filter(e -> e.getKey().equals(event.destination))
         .map(Map.Entry::getValue)
         .forEach(pollingQueue -> pollingQueue.offer(event));
   }
@@ -40,7 +39,7 @@ class QueuedEventDispatcher implements EventDispatcher {
   private BiConsumer<Map<UUID, Queue<Event>>, Event> networkEventConsumer() {
     return (receiver, event) -> receiver.entrySet()
         .stream()
-        .filter(e -> !e.getKey().equals(event.sourceId))
+        .filter(e -> !e.getKey().equals(event.source))
         .map(Map.Entry::getValue)
         .forEach(pollingQueue -> pollingQueue.offer(event));
   }
@@ -51,9 +50,7 @@ class QueuedEventDispatcher implements EventDispatcher {
   }
 
   Poller register(UUID node) {
-    sentNetworkEvents.put(node, new LinkedBlockingQueue<>());
     receivedNetworkEvents.put(node, new LinkedBlockingQueue<>());
-    sentTimeEvents.put(node, new LinkedBlockingQueue<>());
     receivedTimeEvents.put(node, new LinkedBlockingQueue<>());
 
     return new EventPoller(
